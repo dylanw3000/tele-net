@@ -14,7 +14,9 @@
     <sprite>sprites\sEnemy</sprite>
   </sprites>
   <backgrounds name="background"/>
-  <paths name="paths"/>
+  <paths name="paths">
+    <path>paths\path0</path>
+  </paths>
   <scripts name="scripts">
     <script>scripts\scr_received_packet.gml</script>
     <script>scripts\enemy_data_out.gml</script>

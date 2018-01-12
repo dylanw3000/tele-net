@@ -59,6 +59,7 @@ explo_cd = 8;
 explo_timer = explo_cd-1;
 explo_delay = 4;
 explo_out = 550;
+explo_dam = 600;
 
 pillars = ds_list_create();
 for(j=0; j&lt;4; j++){
@@ -184,6 +185,8 @@ else{
             fill = explo_out*(explo_timer-explo_cd)/explo_delay;
             tele_circ(x,y, 0,pillar_dist, -pi,pi, 0,fill);
             
+            unit = instance_find(oPlayer,0);
+            
             for(j=0; j&lt;ds_list_size(pillars); j++){
                 pillar = ds_list_find_value(pillars, j);
                 ang = arctan2(pillar.y-y,pillar.x-x);
@@ -205,10 +208,14 @@ else{
                 }
                 
                 tele_circ(x,y, pillar_dist,explo_out, ang1,ang2, 0,fill);
+                if(explo_timer &gt;= explo_cd+explo_delay){
+                    collide_circ(x,y, pillar_dist,explo_out, ang1,ang2, explo_dam, unit);
+                }
             }
             
             if(explo_timer &gt;= explo_cd+explo_delay){
                 explo_timer -= explo_cd+explo_delay;
+                collide_circ(x,y, 0,pillar_dist, -pi,pi, explo_dam, unit);
             }
         }
     }
