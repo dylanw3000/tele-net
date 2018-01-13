@@ -34,6 +34,9 @@ timescale = 1;
 globalvar debug;
 debug = false;
 
+globalvar local_players;
+local_players = ds_list_create();
+
 </string>
           </argument>
         </arguments>

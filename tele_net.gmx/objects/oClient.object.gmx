@@ -3,7 +3,7 @@
   <spriteName>sprite1</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-5</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -50,6 +50,9 @@ socket_no = noone;
 
 player.socket_no = socket;
 player.str = string(socket_no) + " " + string(connection);
+ds_list_add(local_players, player);
+
+external = true;
 
 </string>
           </argument>
@@ -74,11 +77,26 @@ player.str = string(socket_no) + " " + string(connection);
           <argument>
             <kind>1</kind>
             <string>
+
 player.w = keyboard_check(ord('W'));
 player.a = keyboard_check(ord('A'));
 player.s = keyboard_check(ord('S'));
 player.d = keyboard_check(ord('D'));
 
+player.hp += player.heal;
+if(player.hp &gt; player.hp_max){
+    player.hp = player.hp_max;
+}
+player.heal = 0;
+
+player.hp -= player.hit;
+if(player.hp &lt;= 0){
+    //instance_destroy();
+    player.hp = player.hp_max;
+}
+player.hit = 0;
+
+/*
 ping_timer += d_time;
 if(ping_timer &gt;= ping_timer_max){
     //ping_timer = 0;
@@ -114,6 +132,7 @@ if(ping_timer &gt;= ping_timer_max){
         }
     }
 }
+*/
 
 </string>
           </argument>
@@ -192,30 +211,42 @@ if(socket == async_load[? "id"]){
                 usocket = buffer_read(buffer_in, buffer_u16);
                 if(usocket != socket_no){
                     unit = noone;
-                    for(i=0; i&lt;instance_number(oPlayer2); i++){
-                        tmp = instance_find(oPlayer2, i);
+                    for(i=0; i&lt;instance_number(oPlayer); i++){
+                        tmp = instance_find(oPlayer, i);
                         if(tmp.socket_no == usocket){
+                            external = true;
+                            for(j=0; j&lt;ds_list_size(local_players); j++){
+                                if(ds_list_find_value(local_players, j) == tmp){
+                                    external = false;
+                                    break;
+                                }
+                            }
                             unit = tmp;
                             break;
                         }
                     }
-                    if(unit == noone){
-                        unit = instance_create(0,0,oPlayer2);
-                        unit.socket_no = usocket;
+                    if(external){
+                        if(unit == noone){
+                            unit = instance_create(0,0,oPlayer);
+                            unit.socket_no = usocket;
+                        }
+                        unit.x = buffer_read(buffer_in, buffer_f32);
+                        unit.y = buffer_read(buffer_in, buffer_f32);
+                        /*
+                        unit.horiz = buffer_read(buffer_in, buffer_f32);
+                        unit.vert = buffer_read(buffer_in, buffer_f32);
+                        unit.hp = buffer_read(buffer_in, buffer_f32);
+                        //unit.heal = 
+                        buffer_read(buffer_in, buffer_f32);
+                        //unit.hit = 
+                        buffer_read(buffer_in, buffer_f32);
+                        unit.cone_timer = buffer_read(buffer_in, buffer_f32);
+                        unit.cone_ang = buffer_read(buffer_in, buffer_f32);
+                        */
                     }
-                    unit.x = buffer_read(buffer_in, buffer_f32);
-                    unit.y = buffer_read(buffer_in, buffer_f32);
-                    unit.horiz = buffer_read(buffer_in, buffer_f32);
-                    unit.vert = buffer_read(buffer_in, buffer_f32);
-                    unit.hp = buffer_read(buffer_in, buffer_f32);
-                    //unit.heal = 
-                    buffer_read(buffer_in, buffer_f32);
-                    //unit.hit = 
-                    buffer_read(buffer_in, buffer_f32);
-                    unit.cone_timer = buffer_read(buffer_in, buffer_f32);
-                    unit.cone_ang = buffer_read(buffer_in, buffer_f32);
                 }
                 else{
+                    /*
                     buffer_read(buffer_in, buffer_f32);
                     buffer_read(buffer_in, buffer_f32);
                     buffer_read(buffer_in, buffer_f32);
@@ -223,6 +254,7 @@ if(socket == async_load[? "id"]){
                     buffer_read(buffer_in, buffer_f32);
                     player.heal += buffer_read(buffer_in, buffer_f32);
                     player.hit += buffer_read(buffer_in, buffer_f32);
+                    */
                 }
             }
             break;
@@ -247,6 +279,19 @@ if(socket == async_load[? "id"]){
             break;
         case 250:   //Set player socket info
             socket_no = buffer_read(buffer_in, buffer_u16);
+            
+            for(i=0; i&lt;instance_number(oPlayer); i++){
+                unit = instance_find(oPlayer, i);
+                if(unit.socket_no == socket_no){
+                    ds_list_replace(local_players, ds_list_find_index(local_players, player), unit);
+                    with(player){
+                        instance_destroy();
+                    }
+                    player = unit;
+                    break;
+                }
+            }
+            
             player.socket_no = socket_no;
             player.str = socket_no;
             break;

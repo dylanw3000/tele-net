@@ -47,11 +47,13 @@ buffer_out = buffer_create(size,type,alignment);
 //client_y = ds_list_create();
 client_units = ds_map_create();
 
+
 ping_timer = 0;
 ping_timer_max = 1/30;
 
 player = instance_create(100,100,oPlayer);
 player.socket_no = 1337;
+ds_list_add(local_players, player);
 
 str = "";
 
@@ -89,6 +91,47 @@ for(i=0; i&lt;instance_number(oEnemy); i++){    //Enemy Movement
     unit.server_actions = true;
 }
 
+player.hp += player.heal;
+if(player.hp &gt; player.hp_max){
+    player.hp = player.hp_max;
+}
+player.heal = 0;
+
+player.hp -= player.hit;
+if(player.hp &lt;= 0){
+    //instance_destroy();
+    player.hp = player.hp_max;
+}
+player.hit = 0;
+
+if(mouse_check_button(mb_left) &amp;&amp; player.cone_timer &gt;= player.cone_cd &amp;&amp; player.cone_timer &gt;= player.cone_ticks*player.cone_delay){
+    player.cone = true;
+    player.cone_timer = 0;
+    player.cone_tick_no = 0;
+}
+
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
 ping_timer += d_time;
 if(ping_timer &gt;= ping_timer_max){
     ping_timer = 0;
@@ -102,6 +145,7 @@ if(ping_timer &gt;= ping_timer_max){
         unit = client_units[? sock];
         buffer_write(buffer_out, buffer_f32, unit.x);
         buffer_write(buffer_out, buffer_f32, unit.y);
+        /*
         buffer_write(buffer_out, buffer_f32, unit.horiz);
         buffer_write(buffer_out, buffer_f32, unit.vert);
         buffer_write(buffer_out, buffer_f32, unit.hp);
@@ -109,6 +153,7 @@ if(ping_timer &gt;= ping_timer_max){
         buffer_write(buffer_out, buffer_f32, unit.hit);
         buffer_write(buffer_out, buffer_f32, unit.cone_timer);
         buffer_write(buffer_out, buffer_f32, unit.cone_ang);
+        */
         
         unit.heal = 0;
         unit.hit = 0;
@@ -124,6 +169,7 @@ if(ping_timer &gt;= ping_timer_max){
     //unit = client_units[? sock];
     buffer_write(buffer_out, buffer_f32, player.x);
     buffer_write(buffer_out, buffer_f32, player.y);
+    /*
     buffer_write(buffer_out, buffer_f32, player.horiz);
     buffer_write(buffer_out, buffer_f32, player.vert);
     buffer_write(buffer_out, buffer_f32, player.hp);
@@ -131,8 +177,7 @@ if(ping_timer &gt;= ping_timer_max){
     buffer_write(buffer_out, buffer_f32, player.hit);
     buffer_write(buffer_out, buffer_f32, player.cone_timer);
     buffer_write(buffer_out, buffer_f32, player.cone_ang);
-    
-    player.heal = 0;
+    */
     
     for(i=0; i&lt;ds_list_size(client_sockets); i++){
         network_send_packet(ds_list_find_value(client_sockets,i),buffer_out,buffer_tell(buffer_out));
@@ -191,7 +236,14 @@ switch (type_event){
         //str = async_load[? "socket"];
         //ds_list_add(client_x, 50);
         //ds_list_add(client_y, 50);
+        
+        /*
         unit = instance_create(50,50,oPlayer2);
+        ds_map_add(client_units, async_load[? "socket"], unit);
+        unit.socket_no = async_load[? "socket"];
+        */
+        
+        unit = instance_create(100,100,oPlayer);
         ds_map_add(client_units, async_load[? "socket"], unit);
         unit.socket_no = async_load[? "socket"];
         

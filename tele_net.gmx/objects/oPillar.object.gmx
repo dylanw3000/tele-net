@@ -54,12 +54,15 @@ width = 40;
             <kind>1</kind>
             <string>
 if(instance_exists(oPlayer)){
-    player = instance_find(oPlayer,0);
-    if(point_distance(x,y,player.x,player.y) &lt; player.radius+width){
-        ang = arctan2(player.y-y, player.x-x);
-        while(point_distance(x,y,player.x,player.y) &lt; player.radius+width){
-            player.x += cos(ang);
-            player.y += sin(ang);
+    for(i=0; i&lt;ds_list_size(local_players); i++){
+        player = ds_list_find_value(local_players, i);
+        //player = instance_find(oPlayer,0);
+        if(point_distance(x,y,player.x,player.y) &lt; player.radius+width){
+            ang = arctan2(player.y-y, player.x-x);
+            while(point_distance(x,y,player.x,player.y) &lt; player.radius+width){
+                player.x += cos(ang);
+                player.y += sin(ang);
+            }
         }
     }
 }

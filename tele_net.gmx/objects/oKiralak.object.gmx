@@ -153,15 +153,18 @@ else{
                     laser_l
                 );
                 if(laser_dam_timer &gt;= laser_dam_time){
-                    collide_rect(
-                        pillar.x,
-                        pillar.y, 
-                        laser_l,
-                        laser_w, 
-                        laser_ang+pi/2*j+pi/4*(i%2), 
-                        laser_damage, 
-                        player
-                    );
+                    for(pno=0; pno&lt;instance_number(oPlayer); pno++){
+                        unit = ds_list_find_value(local_players, pno);
+                        collide_rect(
+                            pillar.x,
+                            pillar.y, 
+                            laser_l,
+                            laser_w, 
+                            laser_ang+pi/2*j+pi/4*(i%2), 
+                            laser_damage, 
+                            unit
+                        );
+                    }
                 }
             }
         }

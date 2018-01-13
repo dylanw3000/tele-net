@@ -66,7 +66,8 @@ dash_timer = dash_cd;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>y_mod = s-w;
+            <string>
+y_mod = s-w;
 x_mod = d-a;
 
 if(x_mod != 0 &amp;&amp; y_mod != 0){
@@ -184,11 +185,8 @@ env_v = 0;
             <kind>1</kind>
             <string>
 cone_timer += d_time;
-if(mouse_check_button(mb_left) &amp;&amp; cone_timer &gt;= cone_cd &amp;&amp; cone_timer &gt;= cone_ticks*cone_delay){
-    cone = true;
-    cone_timer = 0;
-    cone_tick_no = 0;
-}
+
+shot_ang = arctan2(mouse_y-y,mouse_x-x);
 
 if(cone){
     cone_ang = arctan2(mouse_y-y,mouse_x-x);
@@ -237,12 +235,6 @@ if(hit == 0){
     color = $ffffff;
 }
 else if(hit &gt; 0){
-    hp -= hit;
-    if(hp &lt;= 0){
-        //instance_destroy();
-        hp = hp_max;
-    }
-    hit = 0;
     color = $ffff33;
 }
 else{
@@ -259,7 +251,7 @@ draw_set_color($000000);
 draw_text(x,y+20, heal);
 */
 
-
+/*
 if(heal &gt; 0){
     hp += heal;
     heal = 0;
@@ -267,7 +259,7 @@ if(heal &gt; 0){
         hp = hp_max;
     }
 }
-
+*/
 
 if(slow_timer &gt; 0){
     color = $ffff33;
