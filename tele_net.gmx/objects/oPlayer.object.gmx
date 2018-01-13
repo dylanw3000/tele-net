@@ -190,7 +190,7 @@ shot_ang = arctan2(mouse_y-y,mouse_x-x);
 
 if(cone){
     cone_ang = arctan2(mouse_y-y,mouse_x-x);
-    tele_circ(x,y, cone_in,cone_out, cone_ang-cone_wid,cone_ang+cone_wid, 2, cone_timer*cone_out/(cone_ticks*cone_delay));
+    tele_circ(x+cos(cone_ang)*cone_disp,y+sin(cone_ang)*cone_disp, cone_in,cone_out, cone_ang-cone_wid,cone_ang+cone_wid, 2, cone_timer*cone_out/(cone_ticks*cone_delay));
     //draw_rectangle(x-50,y-50,x+50,y+50,0);
     if(cone_timer-cone_tick_no*cone_delay &gt; cone_delay){
         heal += cone_heal;
@@ -237,14 +237,14 @@ if(hit == 0){
 else if(hit &gt; 0){
     color = $ffff33;
 }
-else{
+/*else{
     hp -= hit;
     if(hp &gt; hp_max){
         hp = hp_max;
     }
     hit = 0;
     color = $ffffff;
-}
+}*/
 
 /*
 draw_set_color($000000);
@@ -284,6 +284,8 @@ draw_sprite_ext(sprite_index,image_index, x,y, 1,1, 0, color, 1);
 if(debug){
     draw_set_colour($ffffff);
     draw_circle(x-.5,y-.5,radius,0);
+    draw_set_colour($000000);
+    draw_text(x,y, string(hp) + "#" + string(hit) + "#" + string(heal));
 }
 
 </string>

@@ -33,18 +33,24 @@ switch(message_id) {
             }
         }*/
         unit = client_units[? async_load[? "id"]];
+        external = true;
+        for(i=0; i<ds_list_size(local_players); i++){
+            if(ds_list_find_value(local_players, i) == unit){
+                external = false;
+                break;
+            }
+        }
         //str = sock;
         ux = buffer_read(buffer, buffer_f32);
         uy = buffer_read(buffer, buffer_f32);
-        //x = ux;
-        //y = uy;
-        //ds_list_replace(client_x, sock, ux);
-        //ds_list_replace(client_y, sock, uy);
-        unit.x = ux;
-        unit.y = uy;
-        unit.horiz = buffer_read(buffer, buffer_f32);
-        unit.vert = buffer_read(buffer, buffer_f32);
-        unit.hp = buffer_read(buffer, buffer_f32);
+        
+        if(external){
+            unit.x = ux;
+            unit.y = uy;
+            unit.horiz = buffer_read(buffer, buffer_f32);
+            unit.vert = buffer_read(buffer, buffer_f32);
+            unit.hp = buffer_read(buffer, buffer_f32);
+        }
         
         break;
     case 3: //cone

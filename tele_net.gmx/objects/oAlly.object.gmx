@@ -78,9 +78,10 @@ cone_tick_no = 0;
 cone_delay = .2;
 cone_ang = 0;
 cone_wid = pi/12;
-cone_in = 0;   //24
+cone_in = 40;   //24
 cone_out = 220;
 cone_heal = 60;
+cone_disp = -20;
 
 stab = false;
 stab_cd = .4;

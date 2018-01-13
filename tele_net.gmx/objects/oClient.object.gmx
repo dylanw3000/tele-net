@@ -96,10 +96,36 @@ if(player.hp &lt;= 0){
 }
 player.hit = 0;
 
-/*
+if(mouse_check_button(mb_left) &amp;&amp; player.cone_timer &gt;= player.cone_cd &amp;&amp; player.cone_timer &gt;= player.cone_ticks*player.cone_delay){
+    player.cone = true;
+    player.cone_timer = 0;
+    player.cone_tick_no = 0;
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
 ping_timer += d_time;
 if(ping_timer &gt;= ping_timer_max){
-    //ping_timer = 0;
+    ping_timer = 0;
     
     buffer_seek(buffer_out,buffer_seek_start,0);
     buffer_write(buffer_out,buffer_u8,2);
@@ -118,8 +144,8 @@ if(ping_timer &gt;= ping_timer_max){
         network_send_packet(socket,buffer_out,buffer_tell(buffer_out));
     }
     
-    for(i=0; i&lt;instance_number(oPlayer2); i++){
-        unit = instance_find(oPlayer2, i);
+    for(i=0; i&lt;instance_number(oPlayer); i++){
+        unit = instance_find(oPlayer, i);
         if(unit.heal &gt; 0){
             buffer_seek(buffer_out,buffer_seek_start,0);
             buffer_write(buffer_out,buffer_u8,4);
@@ -132,7 +158,7 @@ if(ping_timer &gt;= ping_timer_max){
         }
     }
 }
-*/
+
 
 </string>
           </argument>
