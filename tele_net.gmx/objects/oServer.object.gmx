@@ -366,7 +366,7 @@ draw_text(x,y+20, str);
         <arguments>
           <argument>
             <kind>10</kind>
-            <object>oSpin</object>
+            <object>oKiralak</object>
           </argument>
           <argument>
             <kind>0</kind>

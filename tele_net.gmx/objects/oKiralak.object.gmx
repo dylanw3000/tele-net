@@ -92,6 +92,14 @@ for(j=0; j&lt;4; j++){
           <argument>
             <kind>1</kind>
             <string>
+for(i=0; i&lt;ds_list_size(pillars); i++){
+    pillar = ds_list_find_value(pillars, i);
+    ang = pi/2*i+pi/4+pillar_ang;
+    //pillar.x += 5*d_time;
+    pillar.x = x+cos(ang)*pillar_dist;
+    pillar.y = y+sin(ang)*pillar_dist;
+}
+
 if(init_timer &lt; init_time){
     scale = 1;
     if(init_timer &lt; init_time/3){
@@ -153,7 +161,7 @@ else{
                     laser_l
                 );
                 if(laser_dam_timer &gt;= laser_dam_time){
-                    for(pno=0; pno&lt;instance_number(oPlayer); pno++){
+                    for(pno=0; pno&lt;ds_list_size(local_players); pno++){
                         unit = ds_list_find_value(local_players, pno);
                         collide_rect(
                             pillar.x,
