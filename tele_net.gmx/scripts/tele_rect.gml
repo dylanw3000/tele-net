@@ -19,13 +19,21 @@ shader_set(shader1);
     
     xx = shader_get_uniform(shader0, "u_vCol1"); //main color
     yy = shader_get_uniform(shader0, "u_vCol2"); //fill color
-    if(argument5 == 0){
+    if(argument5 == 0){     //red
         shader_set_uniform_f(xx, 0.7, 0.3, 0.3, 0.5);
         shader_set_uniform_f(yy, 0.7, 0.2, 0.2, 0.5);
     }
-    else{
-        shader_set_uniform_f(xx, 0.7, 0.7, 0.4, 0.5);
-        shader_set_uniform_f(yy, 0.7, 0.3, 0.3, 0.5);
+    else if(argument5 == 1){    //purple
+        shader_set_uniform_f(xx, 0.3, 0.1, 0.1, 0.5);
+        shader_set_uniform_f(yy, 0.6, 0.3, 0.7, 0.5);
+    }
+    else if(argument5 == 2){    //green
+        shader_set_uniform_f(xx, 0.4, 0.8, 0.4, 0.5);
+        shader_set_uniform_f(yy, 0.2, 0.8, 0.3, 0.5);
+    }
+    else{       //blue
+        shader_set_uniform_f(xx, 0.4, 0.4, 0.7, 0.5);
+        shader_set_uniform_f(yy, 0.2, 0.2, 0.8, 0.5);
     }
     
     xx = shader_get_uniform(shader1, "u_fFill");

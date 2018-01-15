@@ -53,10 +53,19 @@ switch(message_id) {
         }
         
         break;
-    case 3: //cone
-        unit = client_units[? async_load[? "id"]];
-        unit.cone_timer = buffer_read(buffer, buffer_f32);
-        unit.cone_ang = buffer_read(buffer, buffer_f32);
+    case 3: //primary
+        external = true;
+        for(pno=0; pno<ds_list_size(local_players); pno++){
+            if(ds_list_find_value(local_players, pno) == unit){
+                external = false;
+                break;
+            }
+        }
+        if(external){
+            unit = client_units[? async_load[? "id"]];
+            unit.primary_timer = buffer_read(buffer, buffer_f32);
+            unit.primary_ang = buffer_read(buffer, buffer_f32);
+        }
         
         break;
     case 4: //allies healed

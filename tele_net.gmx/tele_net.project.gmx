@@ -10,6 +10,7 @@
     <sprite>sprites\sprite1</sprite>
     <sprite>sprites\sprite2</sprite>
     <sprite>sprites\sPlayer</sprite>
+    <sprite>sprites\sStalker</sprite>
     <sprite>sprites\sWall</sprite>
     <sprite>sprites\sEnemy</sprite>
   </sprites>
@@ -27,6 +28,8 @@
     <script>scripts\collide_rect.gml</script>
     <script>scripts\tele_square.gml</script>
     <script>scripts\collide_square.gml</script>
+    <script>scripts\buff_table.gml</script>
+    <script>scripts\class_sheet.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shader0.shader</shader>

@@ -35,14 +35,24 @@ d = 0;
 
 str = "";
 
+class = 0;  //0 = heal, 1 = stalker
+
 max_speed = 120;
 acc = 800;
 
 //hp_max = 800;
 //hp = hp_max;
 
-dash_cd = 2;
+dash = false;
+dash_cd = 1;
 dash_timer = dash_cd;
+dash_dist = 200;
+dash_dur = .3;
+
+primary = false;
+primary_timer = 2;
+primary_ang = 0;
+class_sheet(class);
 
 </string>
           </argument>
@@ -70,12 +80,23 @@ dash_timer = dash_cd;
 y_mod = s-w;
 x_mod = d-a;
 
+buff_pointer = 0;
+buff_failsafe = -1;
+buff_failsafe2 = ds_list_size(buffs);
+while(buff_pointer &lt; ds_list_size(buffs)){
+    if(buff_failsafe == buff_pointer &amp;&amp; buff_failsafe2 == ds_list_size(buffs)){
+        break;
+    }
+    buff_failsafe = buff_pointer;
+    buff_failsafe2 = ds_list_size(buffs);
+    buff_table(buff_pointer);
+}
+
 if(x_mod != 0 &amp;&amp; y_mod != 0){
     x_mod = .7 * x_mod;
     y_mod = .7 * y_mod;
 }
 
-dash = false;
 //slow = false;
 /*for(i=0; i&lt;ds_list_size(buffs); i++){
     a = ds_list_find_value(buffs, i);
@@ -184,32 +205,60 @@ env_v = 0;
           <argument>
             <kind>1</kind>
             <string>
-cone_timer += d_time;
+primary_timer += d_time;
 
-shot_ang = arctan2(mouse_y-y,mouse_x-x);
+//shot_ang = arctan2(mouse_y-y,mouse_x-x);
 
-if(cone){
-    cone_ang = arctan2(mouse_y-y,mouse_x-x);
-    tele_circ(x+cos(cone_ang)*cone_disp,y+sin(cone_ang)*cone_disp, cone_in,cone_out, cone_ang-cone_wid,cone_ang+cone_wid, 2, cone_timer*cone_out/(cone_ticks*cone_delay));
-    //draw_rectangle(x-50,y-50,x+50,y+50,0);
-    if(cone_timer-cone_tick_no*cone_delay &gt; cone_delay){
-        heal += cone_heal;
-        cone_tick_no++;
-        for(i=0; i&lt;instance_number(oAlly); i++){
-            unit = instance_find(oAlly,i);
-            if(unit != id){
-                collide_circ(x,y, cone_in,cone_out, cone_ang-cone_wid,cone_ang+cone_wid, -cone_heal, unit);
+if(primary){
+    primary_ang = arctan2(mouse_y-y,mouse_x-x);
+    if(class == 0 || class == 1){
+        tele_circ(x+cos(primary_ang)*primary_disp,y+sin(primary_ang)*primary_disp, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_color, primary_timer*primary_out/(primary_ticks*primary_delay));
+        if(primary_timer-primary_tick_no*primary_delay &gt; primary_delay){
+            primary_tick_no++;
+            
+            if(class == 0){
+                heal += primary_heal;
+                for(i=0; i&lt;instance_number(oAlly); i++){
+                    unit = instance_find(oAlly,i);
+                    if(unit != id){
+                        collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, -primary_heal, unit);
+                    }
+                }
             }
-        }
-        if(cone_timer &gt; cone_ticks*cone_delay){
-            cone = false;
+            else if(class == 1){
+                for(i=0; i&lt;instance_number(oEnemy); i++){
+                    unit = instance_find(oEnemy,i);
+                    collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_dam, unit);
+                }
+            }
+            if(primary_timer &gt; primary_ticks*primary_delay){
+                primary = false;
+            }
         }
     }
 }
 
+/*
+if(primary){
+    primary_ang = arctan2(mouse_y-y,mouse_x-x);
+    tele_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, 3, primary_timer*primary_out/(primary_ticks*primary_delay));
+    //draw_rectangle(x-50,y-50,x+50,y+50,0);
+    if(primary_timer-primary_tick_no*primary_delay &gt; primary_delay){
+        primary_tick_no++;
+        for(i=0; i&lt;instance_number(oEnemy); i++){
+            unit = instance_find(oEnemy,i);
+            collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_dam, unit);
+        }
+        if(primary_timer &gt; primary_ticks*primary_delay){
+            primary = false;
+        }
+    }
+}
+
+/*
 stab_timer += d_time;
 if(stab_timer &gt;= stab_cd &amp;&amp; !stab &amp;&amp; mouse_check_button(mb_right)){
-    stab = true;
+    //stab = true;
     stab_timer = 0;
     stab_tick_no = 0;
 }
@@ -229,7 +278,7 @@ if(stab){
         }
     }
 }
-
+*/
 
 if(hit == 0){
     color = $ffffff;
@@ -237,40 +286,38 @@ if(hit == 0){
 else if(hit &gt; 0){
     color = $ffff33;
 }
-/*else{
-    hp -= hit;
-    if(hp &gt; hp_max){
-        hp = hp_max;
-    }
-    hit = 0;
-    color = $ffffff;
-}*/
+//other damage stuff went here
 
+dash_timer += d_time;
 /*
-draw_set_color($000000);
-draw_text(x,y+20, heal);
-*/
-
-/*
-if(heal &gt; 0){
-    hp += heal;
-    heal = 0;
-    if(hp &gt; hp_max){
-        hp = hp_max;
-    }
+if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button(mb_right)){
+    tele_rect(x,y, dash_dist,10, arctan2(mouse_y-y,mouse_x-x), 4, 0);
 }
-*/
-
-if(slow_timer &gt; 0){
-    color = $ffff33;
+if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button_released(mb_right)){
+    dash_timer = 0;
+    dist = 0;
+    ang = arctan2(mouse_y-y,mouse_x-x);
+    while(dist &lt; dash_dist &amp;&amp; !place_meeting(x+cos(ang)*dist, y+sin(ang)*dist, oWall)){
+        dist += radius;
+    }
+    if(dist &lt; dash_dist){
+        dist--;
+        while(place_meeting(x+cos(ang)*dist,y+sin(ang)*dist,oWall)){
+            dist--;
+        }
+    }
+    dist--;
+    
+    ds_list_add(buffs, "dash");
+    ds_list_add(buffs, dash_dur);
+    ds_list_add(buffs, 0);
+    ds_list_add(buffs, x);
+    ds_list_add(buffs, y);
+    ds_list_add(buffs, x+cos(ang)*dist);
+    ds_list_add(buffs, y+sin(ang)*dist);
+    vert = 0;
+    horiz = 0;
 }
-
-/*
-draw_set_colour($0000ff);
-draw_rectangle(20,0, 20+hp,20, 0);
-
-draw_set_colour($000000);
-draw_rectangle(20,0, 20+hp_max,20, 1);
 */
 
 draw_set_colour($444444);

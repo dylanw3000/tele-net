@@ -104,12 +104,11 @@ if(player.hp &lt;= 0){
 }
 player.hit = 0;
 
-if(mouse_check_button(mb_left) &amp;&amp; player.cone_timer &gt;= player.cone_cd &amp;&amp; player.cone_timer &gt;= player.cone_ticks*player.cone_delay){
-    player.cone = true;
-    player.cone_timer = 0;
-    player.cone_tick_no = 0;
+if(mouse_check_button(mb_left) &amp;&amp; player.primary_timer &gt;= player.primary_cd &amp;&amp; player.primary_timer &gt;= player.primary_ticks*player.primary_delay){
+    player.primary = true;
+    player.primary_timer = 0;
+    player.primary_tick_no = 0;
 }
-
 
 </string>
           </argument>
@@ -145,6 +144,8 @@ if(ping_timer &gt;= ping_timer_max){
         unit = client_units[? sock];
         buffer_write(buffer_out, buffer_f32, unit.x);
         buffer_write(buffer_out, buffer_f32, unit.y);
+        buffer_write(buffer_out, buffer_f32, unit.hp);
+        buffer_write(buffer_out, buffer_f32, unit.heal);
         /*
         buffer_write(buffer_out, buffer_f32, unit.horiz);
         buffer_write(buffer_out, buffer_f32, unit.vert);
@@ -155,8 +156,17 @@ if(ping_timer &gt;= ping_timer_max){
         buffer_write(buffer_out, buffer_f32, unit.cone_ang);
         */
         
-        unit.heal = 0;
-        unit.hit = 0;
+        external = true;
+        for(pno=0; pno&lt;ds_list_size(local_players); pno++){
+            if(ds_list_find_value(local_players, pno) == unit){
+                external = false;
+                break;
+            }
+        }
+        if(external){
+            unit.heal = 0;
+            unit.hit = 0;
+        }
         
         for(i=0; i&lt;ds_list_size(client_sockets); i++){
             network_send_packet(ds_list_find_value(client_sockets,i),buffer_out,buffer_tell(buffer_out));
@@ -169,6 +179,8 @@ if(ping_timer &gt;= ping_timer_max){
     //unit = client_units[? sock];
     buffer_write(buffer_out, buffer_f32, player.x);
     buffer_write(buffer_out, buffer_f32, player.y);
+    buffer_write(buffer_out, buffer_f32, player.hp);
+    buffer_write(buffer_out, buffer_f32, player.heal);
     /*
     buffer_write(buffer_out, buffer_f32, player.horiz);
     buffer_write(buffer_out, buffer_f32, player.vert);
@@ -191,6 +203,7 @@ if(ping_timer &gt;= ping_timer_max){
         buffer_write(buffer_out, buffer_u16, unit.object_index);
         buffer_write(buffer_out, buffer_f32, unit.x);
         buffer_write(buffer_out, buffer_f32, unit.y);
+        buffer_write(buffer_out, buffer_f32, unit.hp);
         enemy_data_out(buffer_out, unit);
         
         for(i=0; i&lt;ds_list_size(client_sockets); i++){
@@ -316,9 +329,96 @@ network_destroy(server); //Destroys the server that we made in the create event.
           <argument>
             <kind>1</kind>
             <string>
+with(player){
+    if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button(mb_right)){
+        tele_rect(x,y, dash_dist,10, arctan2(mouse_y-y,mouse_x-x), 4, 0);
+    }
+    if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button_released(mb_right)){
+        dash_timer = 0;
+        dist = 0;
+        ang = arctan2(mouse_y-y,mouse_x-x);
+        while(dist &lt; dash_dist &amp;&amp; !place_meeting(x+cos(ang)*dist, y+sin(ang)*dist, oWall)){
+            dist += radius;
+        }
+        if(dist &lt; dash_dist){
+            dist--;
+            while(place_meeting(x+cos(ang)*dist,y+sin(ang)*dist,oWall)){
+                dist--;
+            }
+        }
+        dist--;
+        
+        ds_list_add(buffs, "dash");
+        ds_list_add(buffs, dash_dur);
+        ds_list_add(buffs, 0);
+        ds_list_add(buffs, x);
+        ds_list_add(buffs, y);
+        ds_list_add(buffs, x+cos(ang)*dist);
+        ds_list_add(buffs, y+sin(ang)*dist);
+        vert = 0;
+        horiz = 0;
+    }
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
 draw_self();
 draw_text(x,y, ds_list_size(client_sockets));
 draw_text(x,y+20, str);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
+with(player){
+    if(class == 0){
+        class = 1;
+        sprite_index = sStalker;
+    }
+    else if(class == 1){
+        class = 0;
+        sprite_index = sPlayer;
+    }
+    class_sheet(class);
+}
 
 </string>
           </argument>

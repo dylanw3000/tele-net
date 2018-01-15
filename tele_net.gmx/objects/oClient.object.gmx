@@ -96,10 +96,10 @@ if(player.hp &lt;= 0){
 }
 player.hit = 0;
 
-if(mouse_check_button(mb_left) &amp;&amp; player.cone_timer &gt;= player.cone_cd &amp;&amp; player.cone_timer &gt;= player.cone_ticks*player.cone_delay){
-    player.cone = true;
-    player.cone_timer = 0;
-    player.cone_tick_no = 0;
+if(mouse_check_button(mb_left) &amp;&amp; player.primary_timer &gt;= player.primary_cd &amp;&amp; player.primary_timer &gt;= player.primary_ticks*player.primary_delay){
+    player.primary = true;
+    player.primary_timer = 0;
+    player.primary_tick_no = 0;
 }
 
 </string>
@@ -136,11 +136,11 @@ if(ping_timer &gt;= ping_timer_max){
     buffer_write(buffer_out,buffer_f32,player.hp);
     network_send_packet(socket,buffer_out,buffer_tell(buffer_out));
     
-    if(player.cone){
+    if(player.primary){
         buffer_seek(buffer_out,buffer_seek_start,0);
         buffer_write(buffer_out,buffer_u8,3);
-        buffer_write(buffer_out,buffer_f32,player.cone_timer);
-        buffer_write(buffer_out,buffer_f32,player.cone_ang);
+        buffer_write(buffer_out,buffer_f32,player.primary_timer);
+        buffer_write(buffer_out,buffer_f32,player.primary_ang);
         network_send_packet(socket,buffer_out,buffer_tell(buffer_out));
     }
     
@@ -258,6 +258,9 @@ if(socket == async_load[? "id"]){
                         }
                         unit.x = buffer_read(buffer_in, buffer_f32);
                         unit.y = buffer_read(buffer_in, buffer_f32);
+                        unit.hp = buffer_read(buffer_in, buffer_f32);
+                        //unit.heal = 
+                        buffer_read(buffer_in, buffer_f32);
                         /*
                         unit.horiz = buffer_read(buffer_in, buffer_f32);
                         unit.vert = buffer_read(buffer_in, buffer_f32);
@@ -272,6 +275,10 @@ if(socket == async_load[? "id"]){
                     }
                 }
                 else{
+                    buffer_read(buffer_in, buffer_f32); //x
+                    buffer_read(buffer_in, buffer_f32); //y
+                    buffer_read(buffer_in, buffer_f32); //hp
+                    player.heal += buffer_read(buffer_in, buffer_f32);
                     /*
                     buffer_read(buffer_in, buffer_f32);
                     buffer_read(buffer_in, buffer_f32);
@@ -288,20 +295,23 @@ if(socket == async_load[? "id"]){
             
             break;
         case 105:   //Enemies
-            u_name = buffer_read(buffer_in, buffer_u16);
-            if(instance_exists(u_name)){
-                unit = instance_find(u_name,0);
-                xx = buffer_read(buffer_in, buffer_f32);
-                yy = buffer_read(buffer_in, buffer_f32);
-                if(point_distance(x,y, xx,yy) &gt; 10){
-                    unit.x = xx;
-                    unit.y = yy;
+            if(!instance_exists(oServer)){
+                u_name = buffer_read(buffer_in, buffer_u16);
+                if(instance_exists(u_name)){
+                    unit = instance_find(u_name,0);
+                    xx = buffer_read(buffer_in, buffer_f32);
+                    yy = buffer_read(buffer_in, buffer_f32);
+                    if(point_distance(x,y, xx,yy) &gt; 10){
+                        unit.x = xx;
+                        unit.y = yy;
+                    }
                 }
+                else{
+                    unit = instance_create(buffer_read(buffer_in, buffer_f32), buffer_read(buffer_in, buffer_f32), u_name);
+                }
+                unit.hp = buffer_read(buffer_in, buffer_f32);
+                enemy_data_in(buffer_in, unit);
             }
-            else{
-                unit = instance_create(buffer_read(buffer_in, buffer_f32), buffer_read(buffer_in, buffer_f32), u_name);
-            }
-            enemy_data_in(buffer_in, unit);
             break;
         case 250:   //Set player socket info
             socket_no = buffer_read(buffer_in, buffer_u16);
@@ -350,6 +360,95 @@ if(socket == async_load[? "id"]){
 ///Destroys our socket and buffer to free memory
 network_destroy(socket);
 buffer_delete(buffer_out);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
+with(player){
+    if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button(mb_right)){
+        tele_rect(x,y, dash_dist,10, arctan2(mouse_y-y,mouse_x-x), 4, 0);
+    }
+    if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button_released(mb_right)){
+        dash_timer = 0;
+        dist = 0;
+        ang = arctan2(mouse_y-y,mouse_x-x);
+        while(dist &lt; dash_dist &amp;&amp; !place_meeting(x+cos(ang)*dist, y+sin(ang)*dist, oWall)){
+            dist += radius;
+        }
+        if(dist &lt; dash_dist){
+            dist--;
+            while(place_meeting(x+cos(ang)*dist,y+sin(ang)*dist,oWall)){
+                dist--;
+            }
+        }
+        dist--;
+        
+        ds_list_add(buffs, "dash");
+        ds_list_add(buffs, dash_dur);
+        ds_list_add(buffs, 0);
+        ds_list_add(buffs, x);
+        ds_list_add(buffs, y);
+        ds_list_add(buffs, x+cos(ang)*dist);
+        ds_list_add(buffs, y+sin(ang)*dist);
+        vert = 0;
+        horiz = 0;
+    }
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>
+with(player){
+    if(class == 0){
+        class = 1;
+        sprite_index = sStalker;
+    }
+    else if(class == 1){
+        class = 0;
+        sprite_index = sPlayer;
+    }
+    class_sheet(class);
+}
 
 </string>
           </argument>
