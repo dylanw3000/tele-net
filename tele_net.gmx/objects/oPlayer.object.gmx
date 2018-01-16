@@ -223,7 +223,7 @@ if(primary){
                     for(i=0; i&lt;instance_number(oAlly); i++){
                         unit = instance_find(oAlly,i);
                         if(unit != id){
-                            collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, -primary_heal, unit);
+                            collide_circ(x+cos(primary_ang)*primary_disp,y+sin(primary_ang)*primary_disp, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, -primary_heal, unit);
                         }
                     }
                 }

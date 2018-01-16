@@ -86,5 +86,24 @@ switch(message_id) {
             player.heal = buffer_read(buffer, buffer_f32);
         }
         break;
+        
+    case 5: //ally class change
+        unit = client_units[? async_load[? "id"]];
+        unit.class = buffer_read(buffer, buffer_u8);
+        with(unit){
+            class_sheet(class);
+        }
+        
+        buffer_seek(buffer_out, buffer_seek_start, 0);
+        buffer_write(buffer_out, buffer_u8, 103);
+        //ds_list_find_index(client_sockets, unit);
+        buffer_write(buffer_out, buffer_u16, unit.socket_no);
+        buffer_write(buffer_out, buffer_u8, unit.class);
+        
+        for(i=0; i<ds_list_size(client_sockets); i++){
+            network_send_packet(ds_list_find_value(client_sockets,i),buffer_out,buffer_tell(buffer_out));
+        }
+        
+        break;
 }
 

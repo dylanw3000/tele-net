@@ -422,13 +422,20 @@ draw_text(x,y+20, str);
 with(player){
     if(class == 0){
         class = 1;
-        sprite_index = sStalker;
     }
     else if(class == 1){
         class = 0;
-        sprite_index = sPlayer;
     }
     class_sheet(class);
+}
+
+buffer_seek(buffer_out, buffer_seek_start, 0);
+buffer_write(buffer_out, buffer_u8, 103);
+buffer_write(buffer_out, buffer_u16, 1337);
+buffer_write(buffer_out, buffer_u8, player.class);
+
+for(i=0; i&lt;ds_list_size(client_sockets); i++){
+    network_send_packet(ds_list_find_value(client_sockets,i),buffer_out,buffer_tell(buffer_out));
 }
 
 </string>

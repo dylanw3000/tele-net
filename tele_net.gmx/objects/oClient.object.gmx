@@ -300,8 +300,20 @@ if(socket == async_load[? "id"]){
                 }
             }
             break;
-        case 103:
-            
+        case 103:   //Ally class change
+            usocket = buffer_read(buffer_in, buffer_u16);
+            unit = noone;
+            for(i=0; i&lt;instance_number(oPlayer); i++){
+                tmp = instance_find(oPlayer, i);
+                if(tmp.socket_no == usocket){
+                    unit = tmp;
+                    break;
+                }
+            }
+            unit.class = buffer_read(buffer_in, buffer_u8);
+            with(unit){
+                class_sheet(class);
+            }
             break;
         case 105:   //Enemies
             if(!instance_exists(oServer)){
@@ -451,14 +463,18 @@ with(player){
 with(player){
     if(class == 0){
         class = 1;
-        sprite_index = sStalker;
     }
     else if(class == 1){
         class = 0;
-        sprite_index = sPlayer;
     }
     class_sheet(class);
 }
+
+buffer_seek(buffer_out, buffer_seek_start, 0);
+buffer_write(buffer_out, buffer_u8, 5);
+buffer_write(buffer_out, buffer_u8, player.class);
+
+network_send_packet(socket,buffer_out,buffer_tell(buffer_out));
 
 </string>
           </argument>

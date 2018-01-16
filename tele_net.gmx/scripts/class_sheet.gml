@@ -1,6 +1,7 @@
 
 switch(argument0){
     case 0:
+        sprite_index = sPlayer;
         //primary = false;
         primary_cd = 1.2;
         //primary_timer = primary_cd;
@@ -17,6 +18,7 @@ switch(argument0){
         primary_color = 2;
         break;
     case 1:
+        sprite_index = sStalker;
         //primary = false;
         primary_cd = .4;
         //primary_timer = primary_cd;
