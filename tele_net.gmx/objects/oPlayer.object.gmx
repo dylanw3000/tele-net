@@ -34,6 +34,7 @@ s = 0;
 d = 0;
 
 str = "";
+local_unit = false;
 
 class = 0;  //0 = heal, 1 = stalker
 
@@ -210,29 +211,32 @@ primary_timer += d_time;
 //shot_ang = arctan2(mouse_y-y,mouse_x-x);
 
 if(primary){
-    primary_ang = arctan2(mouse_y-y,mouse_x-x);
+    
     if(class == 0 || class == 1){
         tele_circ(x+cos(primary_ang)*primary_disp,y+sin(primary_ang)*primary_disp, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_color, primary_timer*primary_out/(primary_ticks*primary_delay));
         if(primary_timer-primary_tick_no*primary_delay &gt; primary_delay){
             primary_tick_no++;
             
-            if(class == 0){
-                heal += primary_heal;
-                for(i=0; i&lt;instance_number(oAlly); i++){
-                    unit = instance_find(oAlly,i);
-                    if(unit != id){
-                        collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, -primary_heal, unit);
+            if(local_unit){
+                if(class == 0){
+                    heal += primary_heal;
+                    for(i=0; i&lt;instance_number(oAlly); i++){
+                        unit = instance_find(oAlly,i);
+                        if(unit != id){
+                            collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, -primary_heal, unit);
+                        }
                     }
                 }
-            }
-            else if(class == 1){
-                for(i=0; i&lt;instance_number(oEnemy); i++){
-                    unit = instance_find(oEnemy,i);
-                    collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_dam, unit);
+                else if(class == 1){
+                    for(i=0; i&lt;instance_number(oEnemy); i++){
+                        unit = instance_find(oEnemy,i);
+                        collide_circ(x,y, primary_in,primary_out, primary_ang-primary_wid,primary_ang+primary_wid, primary_dam, unit);
+                    }
                 }
             }
             if(primary_timer &gt; primary_ticks*primary_delay){
                 primary = false;
+                primary_tick_no = 0;
             }
         }
     }
@@ -332,7 +336,7 @@ if(debug){
     draw_set_colour($ffffff);
     draw_circle(x-.5,y-.5,radius,0);
     draw_set_colour($000000);
-    draw_text(x,y, string(hp) + "#" + string(hit) + "#" + string(heal));
+    draw_text(x,y, string(primary) + "#" + string(primary_ang) + "#" + string(primary_timer) + "#" + string(primary_delay) + "#" + string(primary_tick_no));
 }
 
 </string>

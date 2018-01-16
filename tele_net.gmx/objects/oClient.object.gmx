@@ -51,6 +51,7 @@ socket_no = noone;
 player.socket_no = socket;
 player.str = string(socket_no) + " " + string(connection);
 ds_list_add(local_players, player);
+player.local_unit = true;
 
 external = true;
 
@@ -102,6 +103,10 @@ if(mouse_check_button(mb_left) &amp;&amp; player.primary_timer &gt;= player.prim
     player.primary_tick_no = 0;
 }
 
+with(player){
+    primary_ang = arctan2(mouse_y-y,mouse_x-x);
+}
+
 </string>
           </argument>
         </arguments>
@@ -141,6 +146,7 @@ if(ping_timer &gt;= ping_timer_max){
         buffer_write(buffer_out,buffer_u8,3);
         buffer_write(buffer_out,buffer_f32,player.primary_timer);
         buffer_write(buffer_out,buffer_f32,player.primary_ang);
+        
         network_send_packet(socket,buffer_out,buffer_tell(buffer_out));
     }
     
@@ -261,6 +267,9 @@ if(socket == async_load[? "id"]){
                         unit.hp = buffer_read(buffer_in, buffer_f32);
                         //unit.heal = 
                         buffer_read(buffer_in, buffer_f32);
+                        unit.primary_ang = buffer_read(buffer_in, buffer_f32);
+                        unit.primary = buffer_read(buffer_in, buffer_f32);
+                        unit.primary_timer = buffer_read(buffer_in, buffer_f32);
                         /*
                         unit.horiz = buffer_read(buffer_in, buffer_f32);
                         unit.vert = buffer_read(buffer_in, buffer_f32);
@@ -330,6 +339,7 @@ if(socket == async_load[? "id"]){
             
             player.socket_no = socket_no;
             player.str = socket_no;
+            player.local_unit = true;
             break;
     }
 }

@@ -65,6 +65,7 @@ switch(message_id) {
             unit = client_units[? async_load[? "id"]];
             unit.primary_timer = buffer_read(buffer, buffer_f32);
             unit.primary_ang = buffer_read(buffer, buffer_f32);
+            unit.primary = true;
         }
         
         break;
