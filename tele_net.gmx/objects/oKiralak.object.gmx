@@ -222,7 +222,10 @@ else{
                 
                 tele_circ(x,y, pillar_dist,explo_out, ang1,ang2, 0,fill);
                 if(explo_timer &gt;= explo_cd+explo_delay){
-                    collide_circ(x,y, pillar_dist,explo_out, ang1,ang2, explo_dam, unit);
+                    for(ff=0; ff&lt;ds_list_size(local_players); ff++){
+                        unit = ds_list_find_value(local_players, ff);
+                        collide_circ(x,y, pillar_dist,explo_out, ang1,ang2, explo_dam, unit);
+                    }
                 }
             }
             

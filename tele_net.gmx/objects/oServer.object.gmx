@@ -51,10 +51,12 @@ client_units = ds_map_create();
 ping_timer = 0;
 ping_timer_max = 1/30;
 
+/*
 player = instance_create(100,100,oPlayer);
 player.socket_no = 1337;
 ds_list_add(local_players, player);
 player.local_unit = true;
+*/
 
 str = "";
 
@@ -80,7 +82,7 @@ str = "";
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
+            <string>/*
 player.w = keyboard_check(ord('W'));
 player.a = keyboard_check(ord('A'));
 player.s = keyboard_check(ord('S'));
@@ -114,7 +116,7 @@ if(mouse_check_button(mb_left) &amp;&amp; player.primary_timer &gt;= player.prim
 with(player){
     primary_ang = arctan2(mouse_y-y,mouse_x-x);
 }
-
+*/
 </string>
           </argument>
         </arguments>
@@ -181,6 +183,7 @@ if(ping_timer &gt;= ping_timer_max){
         }
     }
     
+    /*
     buffer_seek(buffer_out, buffer_seek_start, 0);      //Unit Info Self
     buffer_write(buffer_out, buffer_u8, 102);
     buffer_write(buffer_out, buffer_u16, 1337);
@@ -192,6 +195,7 @@ if(ping_timer &gt;= ping_timer_max){
     buffer_write(buffer_out, buffer_f32, player.primary_ang);
     buffer_write(buffer_out, buffer_f32, player.primary);
     buffer_write(buffer_out, buffer_f32, player.primary_timer);
+    */
     /*
     buffer_write(buffer_out, buffer_f32, player.horiz);
     buffer_write(buffer_out, buffer_f32, player.vert);
@@ -340,6 +344,7 @@ network_destroy(server); //Destroys the server that we made in the create event.
           <argument>
             <kind>1</kind>
             <string>
+/*
 with(player){
     if(dash_timer &gt; dash_cd &amp;&amp; mouse_check_button(mb_right)){
         tele_rect(x,y, dash_dist,10, arctan2(mouse_y-y,mouse_x-x), 4, 0);
@@ -370,6 +375,7 @@ with(player){
         horiz = 0;
     }
 }
+*/
 
 </string>
           </argument>
@@ -419,6 +425,7 @@ draw_text(x,y+20, str);
           <argument>
             <kind>1</kind>
             <string>
+/*
 with(player){
     if(class == 0){
         class = 1;
@@ -437,6 +444,7 @@ buffer_write(buffer_out, buffer_u8, player.class);
 for(i=0; i&lt;ds_list_size(client_sockets); i++){
     network_send_packet(ds_list_find_value(client_sockets,i),buffer_out,buffer_tell(buffer_out));
 }
+*/
 
 </string>
           </argument>
