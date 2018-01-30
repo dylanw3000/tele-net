@@ -56,11 +56,18 @@ laser_dam_timer = 0;
 laser_damage = 300;
 scale = 0;
 
-explo_cd = 8;
+explo_cd = 16;
 explo_timer = explo_cd-1;
-explo_delay = 4;
+explo_delay = 3;
 explo_out = 550;
 explo_dam = 600;
+
+splash = false;
+splash_cd = 2;
+splash_timer = splash_cd-1;
+splash_delay = 1;
+splash_out = 60;
+splash_dam = 100;
 
 pillars = ds_list_create();
 for(j=0; j&lt;4; j++){
@@ -135,6 +142,21 @@ if(init_timer &lt; init_time){
     init_timer += d_time;
 }
 else{
+    splash_timer += d_time;
+    if(splash_timer &gt;= splash_cd){
+        if(!splash){
+            splash = true;
+            unit = instance_find(oPlayer,0);
+            splash_x = player.x;
+            splash_y = player.y;
+        }
+        tele_circ(splash_x,splash_y, 0,splash_out, -pi,pi, 0, 0);
+        if(splash_timer &gt;= splash_cd+splash_delay){
+            splash = false;
+            splash_timer -= splash_cd+splash_delay;
+        }
+    }
+    
     if(hp &gt; push1){
         tele_circ(x,y, swirl_in,swirl_in+swirl_out, -pi,pi, 0, 0);
         
